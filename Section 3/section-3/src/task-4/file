@@ -1,0 +1,215 @@
+extern array_idx_2      ;; int array_idx_2
+
+section .text
+    global inorder_intruders
+
+;   struct node {
+;       int value;
+;       struct node *left;
+;       struct node *right;
+;   } __attribute__((packed));
+
+;;  inorder_intruders(struct node *node, struct node *parent, int *array)
+;       functia va parcurge in inordine arborele binar de cautare, salvand
+;       valorile nodurilor care nu respecta proprietatea de arbore binar
+;       de cautare: |node->value > node->left->value, daca node->left exista
+;                   |node->value < node->right->value, daca node->right exista
+;
+;    @params:
+;        node   -> nodul actual din arborele de cautare;
+;        parent -> tatal/parintele nodului actual din arborele de cautare;
+;        array  -> adresa vectorului unde se vor salva valorile din noduri;
+
+; ATENTIE: DOAR in frunze pot aparea valori gresite!
+;          vectorul array este INDEXAT DE LA 0!
+;          Cititi SI fisierul README.md din cadrul directorului pentru exemple,
+;          explicatii mai detaliate!
+
+; HINT: folositi variabila importata array_idx_2 pentru a retine pozitia
+;       urmatorului element ce va fi salvat in vectorul array.
+;       Este garantat ca aceasta variabila va fi setata pe 0 la fiecare
+;       test al functiei inorder_intruders.      
+
+inorder_intruders:
+    enter 0, 0
+    pusha
+
+    mov esi, [ebp + 8]             ; esi - nodul actual din arborele de cautare
+    mov edx, [ebp + 12]            ; edx - tatal nodului actual din arborele de cautare
+    mov edi, [ebp + 16]            ; edi - adresa vectorului unde se vor salva valorile din noduri
+
+conditie_oprire:
+    cmp esi, 0
+    je oprire
+stanga:
+    push edi                       ; pun pe stiva al treilea parametru pentru inorder_intruders
+    push esi              ; pun pe stiva al doilea parametru pentru inorder_intruders
+    push dword[esi + 4]          ; pun pe stiva primul parametru pentru inorder_intruders
+    call inorder_intruders              ; apel recursiv
+    pop dword [esi + 4]          ; scot de pe stiva primul parametru pentru inorder_intruders
+    pop eax                       ; scot de pe stiva al doilea parametru pentru inorder_intruders
+    pop edi                        ; scot de pe stiva al treilea parametru pentru inorder_intruders
+radacina:
+    cmp dword [esi + 4], 0         ; verific daca exista fiu stang
+    jne NU_frunza
+    cmp dword [esi + 8], 0         ; verific daca exista fiu drept
+    jne NU_frunza
+    mov ebx, dword [esi]           ; ebx - valoarea nodului de la adresa din esi
+    mov ecx, dword [array_idx_2]   ; ecx - pozitia unde s-a ajuns in vectorul de output
+    mov dword [edi + 4 * ecx], ebx ; punera efectiva in vectorul de output a valorii
+    add dword [array_idx_2], 1     ; marirea pozitiei unde s-a ajuns in vectorul de output
+    NU_frunza:
+dreapta:
+    push edi                       ; pun pe stiva al treilea parametru pentru inorder_intruders
+    push esi              ; pun pe stiva al doilea parametru pentru inorder_intruders
+    push dword[esi + 8]          ; pun pe stiva primul parametru pentru inorder_intruders
+    call inorder_intruders              ; apel recursiv
+    pop dword [esi + 8]          ; scot de pe stiva primul parametru pentru inorder_intruders
+    pop eax                       ; scot de pe stiva al doilea parametru pentru inorder_intruders
+    pop edi                        ; scot de pe stiva al treilea parametru pentru inorder_intruders
+oprire:
+    popa
+    leave
+    ret
+
+
+cmp dword [esi + 4], 0         ; verific daca exista fiu stang
+    jne nu_retin_nod
+    cmp dword [esi + 8], 0         ; verific daca exista fiu drept
+    jne nu_retin_nod
+    mov ebx, dword [esi]           ; ebx - contine o frunza
+    cmp ebx, dword [eax + 4]
+    je nod_stang
+    cmp ebx, dword [eax + 8]
+    je nod_drept
+    jmp nu_retin_nod
+    nod_stang:
+        cmp ebx, dword [eax]
+        jl nu_retin_nod
+        mov ecx, dword [array_idx_2]   ; ecx - pozitia unde s-a ajuns in vectorul de output
+        mov dword [edi + 4 * ecx], ebx ; punera efectiva in vectorul de output a valorii
+        add dword [array_idx_2], 1     ; marirea pozitiei unde s-a ajuns in vectorul de output
+        jmp nu_retin_nod
+    nod_drept:
+        cmp ebx, dword [eax]
+        jg nu_retin_nod
+        mov ecx, dword [array_idx_2]   ; ecx - pozitia unde s-a ajuns in vectorul de output
+        mov dword [edi + 4 * ecx], ebx ; punera efectiva in vectorul de output a valorii
+        add dword [array_idx_2], 1     ; marirea pozitiei unde s-a ajuns in vectorul de output
+        jmp nu_retin_nod
+    nu_retin_nod:
+
+
+    extern array_idx_2      ;; int array_idx_2
+
+section .text
+    global inorder_intruders
+
+;   struct node {
+;       int value;
+;       struct node *left;
+;       struct node *right;
+;   } __attribute__((packed));
+
+;;  inorder_intruders(struct node *node, struct node *parent, int *array)
+;       functia va parcurge in inordine arborele binar de cautare, salvand
+;       valorile nodurilor care nu respecta proprietatea de arbore binar
+;       de cautare: |node->value > node->left->value, daca node->left exista
+;                   |node->value < node->right->value, daca node->right exista
+;
+;    @params:
+;        node   -> nodul actual din arborele de cautare;
+;        parent -> tatal/parintele nodului actual din arborele de cautare;
+;        array  -> adresa vectorului unde se vor salva valorile din noduri;
+
+; ATENTIE: DOAR in frunze pot aparea valori gresite!
+;          vectorul array este INDEXAT DE LA 0!
+;          Cititi SI fisierul README.md din cadrul directorului pentru exemple,
+;          explicatii mai detaliate!
+
+; HINT: folositi variabila importata array_idx_2 pentru a retine pozitia
+;       urmatorului element ce va fi salvat in vectorul array.
+;       Este garantat ca aceasta variabila va fi setata pe 0 la fiecare
+;       test al functiei inorder_intruders.      
+
+inorder_intruders:
+    enter 0, 0
+    pusha
+
+    mov esi, [ebp + 8]             ; esi - nodul actual din arborele de cautare
+    mov edx, [ebp + 12]            ; edx - tatal nodului actual din arborele de cautare
+    mov edi, [ebp + 16]            ; edi - adresa vectorului unde se vor salva valorile din noduri
+
+conditie_oprire:
+    cmp esi, 0
+    je oprire
+stanga:
+    push edi                       ; pun pe stiva al treilea parametru pentru inorder_intruders
+    push dword[eax +4]              ; pun pe stiva al doilea parametru pentru inorder_intruders
+    push dword[esi + 4]          ; pun pe stiva primul parametru pentru inorder_intruders
+    call inorder_intruders              ; apel recursiv
+    pop dword [esi + 4]          ; scot de pe stiva primul parametru pentru inorder_intruders
+    pop dword[eax +4]                       ; scot de pe stiva al doilea parametru pentru inorder_intruders
+    pop edi                        ; scot de pe stiva al treilea parametru pentru inorder_intruders
+radacina:
+    cmp dword [esi + 4], 0         ; verific daca exista fiu stang
+    jne nu_retin_nod
+    cmp dword [esi + 8], 0         ; verific daca exista fiu drept
+    jne nu_retin_nod
+    mov ebx, dword [esi]           ; ebx - contine o frunza
+    cmp ebx, dword [eax + 4]
+    je nod_stang
+    cmp ebx, dword [eax + 8]
+    je nod_drept
+    jmp nu_retin_nod
+    nod_stang:
+        cmp ebx, dword [eax]
+        jl nu_retin_nod
+        mov ecx, dword [array_idx_2]   ; ecx - pozitia unde s-a ajuns in vectorul de output
+        mov dword [edi + 4 * ecx], ebx ; punera efectiva in vectorul de output a valorii
+        add dword [array_idx_2], 1     ; marirea pozitiei unde s-a ajuns in vectorul de output
+        jmp nu_retin_nod
+    nod_drept:
+        cmp ebx, dword [eax]
+        jg nu_retin_nod
+        mov ecx, dword [array_idx_2]   ; ecx - pozitia unde s-a ajuns in vectorul de output
+        mov dword [edi + 4 * ecx], ebx ; punera efectiva in vectorul de output a valorii
+        add dword [array_idx_2], 1     ; marirea pozitiei unde s-a ajuns in vectorul de output
+        jmp nu_retin_nod
+    nu_retin_nod:
+dreapta:
+    push edi                       ; pun pe stiva al treilea parametru pentru inorder_intruders
+    push dword[eax + 8]              ; pun pe stiva al doilea parametru pentru inorder_intruders
+    push dword[esi + 8]          ; pun pe stiva primul parametru pentru inorder_intruders
+    call inorder_intruders              ; apel recursiv
+    pop dword [esi + 8]          ; scot de pe stiva primul parametru pentru inorder_intruders
+    pop dword[eax + 8]                      ; scot de pe stiva al doilea parametru pentru inorder_intruders
+    pop edi                        ; scot de pe stiva al treilea parametru pentru inorder_intruders
+oprire:
+    popa
+    leave
+    ret
+
+
+radacina:
+    cmp dword [esi + 4], 0         ; verific daca exista fiu stang
+    je NU_fiu_stang
+    mov ebx, dword [esi]           ; ebx - valoarea nodului de la adresa din esi
+    cmp ebx, dword [esi + 4]
+    jg NU_retin_nod
+    mov ebx, dword [esi + 4]  
+    mov ecx, dword [array_idx_2]   ; ecx - pozitia unde s-a ajuns in vectorul de output
+    mov dword [edi + 4 * ecx], ebx ; punera efectiva in vectorul de output a valorii
+    add dword [array_idx_2], 1     ; marirea pozitiei unde s-a ajuns in vectorul de output
+    NU_fiu_stang:
+    cmp dword [esi + 8], 0         ; verific daca exista fiu stang
+    je NU_fiu_drept
+    mov ebx, dword [esi]           ; ebx - valoarea nodului de la adresa din esi
+    cmp ebx, dword [esi + 8]
+    jl NU_retin_nod
+    mov ebx, dword [esi + 8]  
+    mov ecx, dword [array_idx_2]   ; ecx - pozitia unde s-a ajuns in vectorul de output
+    mov dword [edi + 4 * ecx], ebx ; punera efectiva in vectorul de output a valorii
+    add dword [array_idx_2], 1     ; marirea pozitiei unde s-a ajuns in vectorul de output
+    NU_fiu_drept:
+    NU_retin_nod:
